@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f3f5f8;
+    --surface: #ffffff;
+    --ink: #1a1d23;
+    --ink-soft: #5b6270;
+    --border: #e2e5eb;
+    --navy: #1d3461;
+    --navy-dark: #14264a;
+    --ok: #1a7f5a;
+    --ok-bg: #e7f5ef;
+    --warn: #b9690a;
+    --warn-bg: #fbeede;
+    --danger: #c0392b;
+    --danger-bg: #fbe9e7;
+    --info: #2563a8;
+    --info-bg: #e8f0fa;
+    --purple: #6b4fa0;
+    --purple-bg: #efe9f8;
+    --gray: #6b7280;
+    --gray-bg: #eceef1;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(20,30,60,.06), 0 1px 1px rgba(20,30,60,.04);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:1180px;margin:0 auto;padding:20px 20px 60px;}
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:18px;flex-wrap:wrap;gap:10px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{
+    width:38px;height:38px;border-radius:9px;background:var(--navy);
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    font-family:'Manrope';font-weight:800;font-size:15px;flex-shrink:0;
+  }
+  h1{font-family:'Manrope';font-weight:800;font-size:19px;margin:0;letter-spacing:-.01em;}
+  .subtitle{color:var(--ink-soft);font-size:12.5px;margin-top:1px;}
+  .week-badge{
+    font-size:12px;color:var(--ink-soft);background:var(--surface);
+    border:1px solid var(--border);padding:6px 12px;border-radius:20px;
+  }
+
+  nav.tabs{
+    display:flex;gap:4px;background:var(--surface);padding:4px;border-radius:11px;
+    border:1px solid var(--border);margin-bottom:20px;width:fit-content;
+  }
+  nav.tabs button{
+    border:none;background:transparent;padding:9px 16px;border-radius:8px;
+    font-family:'Inter';font-weight:600;font-size:13.5px;color:var(--ink-soft);
+    cursor:pointer;transition:.15s;
+  }
+  nav.tabs button.active{background:var(--navy);color:#fff;}
+  nav.tabs button:not(.active):hover{background:var(--bg);color:var(--ink);}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  /* TAB 1: STATUS */
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .chip{
+    font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:20px;
+    border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--ink-soft);
+  }
+  .chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .btn{
+    font-family:'Inter';font-weight:600;font-size:13.5px;border:none;
+    padding:9px 16px;border-radius:8px;cursor:pointer;transition:.15s;
+  }
+  .btn-primary{background:var(--navy);color:#fff;}
+  .btn-primary:hover{background:var(--navy-dark);}
+  .btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--border);}
+  .btn-ghost:hover{background:var(--bg);}
+  .btn-danger-text{background:transparent;color:var(--danger);font-size:12.5px;padding:6px 8px;}
+  #customizeViewBtn{transition:background-color .15s, border-color .15s, color .15s;}
+
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;
+  }
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:14px;box-shadow:var(--shadow);cursor:pointer;transition:.12s;position:relative;
+  }
+  .card:hover{border-color:#c7cce0;transform:translateY(-1px);}
+  .card.pulse-sick{
+    animation:pulse-sick-glow 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse-sick-glow{
+    0%, 100%{box-shadow:var(--shadow), 0 0 0 0 rgba(192,57,43,0);}
+    50%{box-shadow:var(--shadow), 0 0 0 4px rgba(192,57,43,.14);}
+  }
+  .card.pulse-sick:hover{animation-play-state:paused;}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .emp-name{font-family:'Manrope';font-weight:700;font-size:14.5px;}
+  .emp-role{color:var(--ink-soft);font-size:12px;margin-top:1px;}
+  .status-badge{
+    font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;
+    text-transform:uppercase;letter-spacing:.02em;
+  }
+  .card-meta{font-size:11.5px;color:var(--ink-soft);display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+  .progress-pill{
+    font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;
+  }
+  .empty{
+    text-align:center;color:var(--ink-soft);padding:50px 20px;font-size:13.5px;
+  }
+
+  /* MODAL */
+  .overlay{
+    position:fixed;inset:0;background:rgba(20,25,40,.45);display:none;
+    align-items:flex-start;justify-content:center;padding:40px 16px;z-index:50;overflow-y:auto;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    background:var(--surface);border-radius:14px;max-width:480px;width:100%;
+    box-shadow:0 20px 60px rgba(10,15,30,.25);overflow:hidden;
+  }
+  .modal-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;}
+  .modal-head h2{font-family:'Manrope';font-size:16px;margin:0;}
+  .modal-head .emp-role{margin-top:2px;}
+  .modal-close{background:none;border:none;font-size:20px;color:var(--ink-soft);cursor:pointer;line-height:1;padding:2px 6px;}
+  .modal-body{padding:18px 20px;max-height:60vh;overflow-y:auto;}
+  .modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;}
+  .field-label{font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.02em;}
+  select, input[type=text], textarea{
+    width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:7px;
+    font-family:'Inter';font-size:13.5px;color:var(--ink);background:#fff;
+  }
+  .status-select-wrap{margin-bottom:16px;}
+  .checklist-item{
+    display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid #f0f1f4;
+  }
+  .checklist-item:last-child{border-bottom:none;}
+  .checklist-item input[type=checkbox]{margin-top:3px;width:16px;height:16px;accent-color:var(--navy);flex-shrink:0;}
+  .checklist-item label{font-size:13.5px;line-height:1.4;cursor:pointer;}
+  .checklist-item.done label{color:var(--ink-soft);text-decoration:line-through;}
+  .progress-bar-track{height:6px;background:var(--gray-bg);border-radius:4px;overflow:hidden;margin:10px 0 4px;}
+  .progress-bar-fill{height:100%;background:var(--ok);border-radius:4px;transition:.2s;}
+  .progress-text{font-size:11.5px;color:var(--ink-soft);}
+  .notes-area{margin-top:14px;}
+  .notes-log{max-height:160px;overflow-y:auto;margin-bottom:8px;}
+  .notes-log-empty{font-size:12.5px;color:var(--ink-soft);padding:6px 0;}
+  .notes-log-item{
+    display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #f0f1f4;
+  }
+  .notes-log-item:last-child{border-bottom:none;}
+  .notes-log-text{font-size:13px;color:var(--ink);line-height:1.4;}
+  .notes-log-date{font-size:10.5px;color:var(--ink-soft);white-space:nowrap;flex-shrink:0;margin-top:1px;}
+  .notes-log-del{background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:12px;padding:0 2px;flex-shrink:0;}
+  .notes-log-del:hover{color:var(--danger);}
+  .notes-add-row{display:flex;gap:6px;}
+  .notes-add-row input{flex:1;}
+  .notes-add-row button{white-space:nowrap;padding:9px 14px;}
+  .long-term-btn{
+    margin-top:8px;background:none;border:none;color:var(--purple);font-size:12px;font-weight:600;
+    cursor:pointer;padding:2px 0;text-decoration:underline;
+  }
+
+  /* TAB 2: ROTA */
+  .rota-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+  .rota-nav{display:flex;align-items:center;gap:10px;}
+  .rota-nav button{
+    background:var(--surface);border:1px solid var(--border);width:30px;height:30px;
+    border-radius:7px;cursor:pointer;font-size:14px;color:var(--ink);
+  }
+  table.rota{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);}
+  table.rota th{
+    background:var(--bg);font-family:'Manrope';font-size:11.5px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);padding:10px 8px;text-align:left;
+    border-bottom:1px solid var(--border);
+  }
+  table.rota td{padding:6px;border-bottom:1px solid #f0f1f4;border-right:1px solid #f5f6f8;}
+  table.rota td.emp-col, table.rota th.emp-col{
+    position:sticky;left:0;background:var(--surface);font-weight:600;font-size:13px;padding:10px;min-width:140px;
+  }
+  table.rota th.emp-col{background:var(--bg);}
+  table.rota input{
+    border:1px solid transparent;background:transparent;width:100%;text-align:center;
+    font-size:12.5px;padding:6px 4px;border-radius:6px;
+  }
+  table.rota input:hover{border-color:var(--border);}
+  table.rota input:focus{border-color:var(--navy);outline:none;background:#fff;}
+  .rota-hint{font-size:11.5px;color:var(--ink-soft);margin-top:10px;}
+  table.rota th.day-head{text-align:center;}
+  table.rota th.sub-head{text-align:center;font-size:10.5px;padding:6px 4px;background:#fafbfc;}
+
+  /* Subtle highlight for today's column */
+  table.rota th.day-head.today-col{background:#eef2fa;box-shadow:inset 0 -2px 0 var(--navy);}
+  table.rota th.sub-head.today-col{background:#f4f6fb;}
+  table.rota td.today-col{background:#f7f9fd;}
+  table.rota.compact th.day-head.today-col{box-shadow:inset 0 -2px 0 var(--navy);}
+  table.rota.compact td.today-col{background:#f5f8fc;}
+
+  table.rota td.slot-cell{min-width:128px;}
+  table.rota select.slot-select{
+    height:36px;box-sizing:border-box;
+    border:1px solid var(--border);border-radius:999px;font-size:12px;padding:0 20px 0 10px;
+    width:100%;font-family:'Inter';cursor:pointer;font-weight:600;text-align:center;
+    text-align-last:center;
+    appearance:none;-webkit-appearance:none;-moz-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'><path d='M0 0L5 6L10 0Z' fill='%235b6270'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 8px center;
+    background-size:8px 5px;
+  }
+  table.rota select.slot-select option{
+    background:#ffffff;color:var(--ink);font-weight:500;
+  }
+  .stepper{
+    display:flex;align-items:stretch;gap:4px;height:36px;
+  }
+  input.appts-input{
+    flex:1;min-width:0;border:1px solid var(--border);background:#fff;border-radius:6px;
+    text-align:center;font-size:12.5px;padding:0;-moz-appearance:textfield;
+  }
+  input.appts-input::-webkit-outer-spin-button,
+  input.appts-input::-webkit-inner-spin-button{
+    -webkit-appearance:none;margin:0;
+  }
+  .stepper-arrows{
+    display:flex;flex-direction:column;width:15px;flex-shrink:0;
+    border:1px solid var(--border);border-radius:6px;overflow:hidden;
+  }
+  .stepper-arrows button{
+    border:none;background:transparent;cursor:pointer;padding:0;height:50%;
+    display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-size:7px;line-height:1;
+  }
+  .stepper-arrows button:first-child{border-bottom:1px solid var(--border);}
+  .stepper-arrows button:hover{color:var(--navy);background:var(--bg);}
+  table.rota td.appts-cell{min-width:64px;}
+  .view-toggle{position:relative;display:flex;background:var(--bg);padding:2px;border-radius:8px;border:1px solid var(--border);cursor:pointer;}
+  .view-toggle-slider{
+    position:absolute;top:2px;left:2px;bottom:2px;width:calc(50% - 2px);
+    background:var(--surface);border-radius:6px;box-shadow:var(--shadow);
+    transition:transform .25s cubic-bezier(.4,0,.2,1);z-index:0;
+  }
+  .view-toggle-slider.right{transform:translateX(100%);}
+  .view-toggle button{
+    position:relative;z-index:1;flex:1;border:none;background:transparent;font-family:'Inter';font-weight:600;font-size:12px;
+    padding:7px 14px;border-radius:6px;cursor:pointer;color:var(--ink-soft);transition:color .2s;pointer-events:none;
+  }
+  .view-toggle button.active{color:var(--ink);}
+  .style-popover{
+    position:fixed;top:0;left:0;background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;box-shadow:0 10px 28px rgba(10,15,30,.14);padding:12px;z-index:200;min-width:170px;
+  }
+  .style-popover-options{display:flex;flex-direction:column;gap:4px;}
+  .style-popover-options button{
+    border:1px solid var(--border);background:var(--surface);font-family:'Inter';font-weight:600;font-size:12.5px;
+    padding:7px 10px;border-radius:7px;cursor:pointer;color:var(--ink-soft);text-align:left;
+  }
+  .style-popover-options button.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .style-popover-options button:hover:not(.active){background:var(--bg);}
+  table.rota.compact td.compact-cell{padding:0;cursor:pointer;min-width:112px;vertical-align:middle;}
+
+  /* INLINE STYLE: excel fill */
+  table.rota.inline-excel{border-collapse:collapse;}
+  table.rota.inline-excel td, table.rota.inline-excel th{border:1px solid #c7cce0;padding:0;}
+  table.rota.inline-excel th.day-head{padding:10px 8px;}
+  table.rota.inline-excel th.sub-head{padding:6px 4px;}
+  table.rota.inline-excel th.emp-col, table.rota.inline-excel td.emp-col{padding:10px;}
+  table.rota.inline-excel td.slot-cell{padding:0;min-width:128px;height:1px;}
+  table.rota.inline-excel select.slot-select{
+    height:100%;box-sizing:border-box;
+    border-radius:0;border:none;font-weight:800;font-size:12.5px;padding:0 8px;
+  }
+  table.rota.inline-excel td.appts-cell{background:#fff;padding:6px;}
+
+  /* INLINE STYLE: minimal */
+  table.rota.inline-minimal{border-collapse:collapse;}
+  table.rota.inline-minimal td, table.rota.inline-minimal th{border:none;border-bottom:1px solid #f0f1f4;}
+  table.rota.inline-minimal td.emp-col{border-bottom:1px solid #f0f1f4;}
+  table.rota.inline-minimal select.slot-select{
+    background:transparent !important;border:1px solid transparent;font-weight:600;
+    text-align:left;text-align-last:left;padding-left:4px;background-image:none !important;
+  }
+  table.rota.inline-minimal select.slot-select:hover{border-color:var(--border);}
+  table.rota.inline-minimal select.slot-select option{background:#fff;color:var(--ink);}
+
+  /* INLINE STYLE: zebra */
+  table.rota.inline-zebra tbody tr:nth-child(even){background:#f7f8fa;}
+  table.rota.inline-zebra td.emp-col{background:inherit;}
+  table.rota.compact td.compact-cell:hover{outline:2px solid var(--navy);outline-offset:-2px;}
+
+  /* style: stacked */
+  .compact-half{
+    padding:5px 8px;font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .compact-half:first-child{border-bottom:1px solid rgba(0,0,0,.07);}
+  .compact-appts{font-weight:700;opacity:.65;margin-left:4px;}
+
+  /* style: minimal (dot + plain text) */
+  .compact-line{
+    display:flex;align-items:center;gap:6px;padding:5px 9px;font-size:12px;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .compact-line:first-child{border-bottom:1px solid #f0f1f4;}
+  .compact-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .compact-line .compact-appts{color:var(--ink-soft);opacity:1;font-weight:600;}
+
+  /* style: pills */
+  .compact-pillrow{display:flex;gap:4px;padding:7px 7px 4px;}
+  .compact-pill{
+    flex:1;min-width:0;font-size:10.5px;font-weight:700;text-align:center;border-radius:20px;
+    padding:4px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .compact-pillrow + .compact-appts-row{
+    text-align:center;font-size:10.5px;color:var(--ink-soft);font-weight:600;padding:0 0 6px;
+  }
+
+  /* style: badges (circular abbreviations) */
+  .compact-badgerow{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 6px;position:relative;}
+  .compact-badge{
+    width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:9.5px;font-weight:800;flex-shrink:0;letter-spacing:-.02em;
+  }
+  .compact-badge-appts{
+    position:absolute;top:2px;right:4px;background:var(--navy);color:#fff;font-size:9px;font-weight:700;
+    border-radius:9px;min-width:15px;height:15px;display:flex;align-items:center;justify-content:center;padding:0 3px;
+  }
+
+  /* style: accent (left stripe, plain card) */
+  .compact-accent{display:flex;align-items:stretch;height:100%;}
+  .compact-accent-bar{width:4px;flex-shrink:0;}
+  .compact-accent-body{padding:6px 8px;display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .compact-accent-line1{
+    font-size:14.5px;font-weight:800;color:var(--ink);display:flex;align-items:center;
+    gap:6px;white-space:nowrap;
+  }
+  .compact-accent-activity{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+  .compact-accent-appts{
+    flex-shrink:0;font-size:10.5px;font-weight:700;background:var(--bg);color:var(--ink-soft);
+    border-radius:8px;padding:1px 6px;
+  }
+  .compact-accent-line2{font-size:10.5px;color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .codes-manager{margin-top:22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+  .codes-chips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px;}
+  .code-chip{
+    display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+    padding:5px 6px 5px 11px;border-radius:20px;
+  }
+  .code-chip button{
+    background:rgba(0,0,0,.08);border:none;border-radius:50%;width:16px;height:16px;
+    cursor:pointer;font-size:10px;line-height:1;color:inherit;
+  }
+
+  /* TAB 3: PROCEDURES */
+  .proc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:760px){.proc-grid{grid-template-columns:1fr;}}
+  .proc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+  .proc-card h3{font-family:'Manrope';font-size:14px;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
+  .proc-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .proc-step-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+  .proc-step-row input{font-size:12.5px;padding:7px 9px;}
+  .proc-step-row button{
+    background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:15px;
+    width:26px;height:26px;flex-shrink:0;border-radius:6px;
+  }
+  .proc-step-row button:hover{background:var(--danger-bg);color:var(--danger);}
+  .add-step-btn{font-size:12px;color:var(--navy);background:none;border:none;cursor:pointer;font-weight:600;padding:6px 0;}
+  .warn-banner{
+    background:var(--warn-bg);border:1px solid #f0d3a8;color:#7a4a05;border-radius:8px;
+    padding:10px 14px;font-size:12.5px;margin-bottom:18px;line-height:1.5;
+  }
+  .save-indicator{font-size:11.5px;color:var(--ink-soft);}
+  .anon-toggle{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-soft);cursor:pointer;}
+  .anon-toggle input{accent-color:var(--navy);}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark">TD</div>
+      <div>
+        <h1>Team Dashboard</h1>
+        <div class="subtitle">Status, procedures, rota</div>
+      </div>
+    </div>
+    <span class="save-indicator" id="saveIndicator">Loading…</span>
+  </header>
+
+  <nav class="tabs">
+    <button class="active" data-tab="status">Team Status</button>
+    <button data-tab="rota">Rota</button>
+    <button data-tab="proc">Procedures</button>
+  </nav>
+
+  <!-- TAB: STATUS -->
+  <section class="panel active" id="panel-status">
+    <div class="toolbar">
+      <div class="chips" id="statusChips"></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <label class="anon-toggle"><input type="checkbox" id="anonToggle"> show initials instead of names</label>
+        <button class="btn btn-ghost" id="loadSampleBtn">+ Load sample data</button>
+        <button class="btn btn-primary" id="addEmpBtn">+ Add employee</button>
+      </div>
+    </div>
+    <div class="grid" id="empGrid"></div>
+  </section>
+
+  <!-- TAB: ROTA -->
+  <section class="panel" id="panel-rota">
+    <div class="rota-toolbar">
+      <div class="rota-nav">
+        <button id="prevWeek">‹</button>
+        <span class="week-badge" id="weekLabel"></span>
+        <button id="nextWeek">›</button>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="btn btn-ghost" id="customizeViewBtn">⚙ Customize view</button>
+        <div class="view-toggle" id="rotaViewToggle">
+          <div class="view-toggle-slider right" id="viewToggleSlider"></div>
+          <button id="viewInlineBtn">Inline</button>
+          <button id="viewCompactBtn" class="active">Compact</button>
+        </div>
+        <button class="btn btn-ghost" id="todayWeek">This week</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="rota" id="rotaTable"></table>
+    </div>
+    <div class="rota-hint">Pick the Activity / Plus slot from the dropdown, enter Bookings count if relevant. Saves automatically.</div>
+
+    <div class="codes-manager">
+      <span class="field-label">Activity codes (used in the AM/PM dropdowns)</span>
+      <div class="codes-chips" id="codesChips"></div>
+      <button class="add-step-btn" id="addCodeBtn">+ Add code</button>
+    </div>
+  </section>
+
+  <!-- TAB: PROCEDURES -->
+  <section class="panel" id="panel-proc">
+    <div class="proc-grid" id="procGrid"></div>
+  </section>
+
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2 id="modalName"></h2>
+        <div class="emp-role" id="modalRole"></div>
+      </div>
+      <button class="modal-close" id="modalClose">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="status-select-wrap">
+        <span class="field-label">Status</span>
+        <select id="modalStatusSelect"></select>
+        <button class="long-term-btn" id="longTermSickBtn" style="display:none;">→ Mark as Long-term sickness</button>
+      </div>
+      <div id="modalChecklistWrap"></div>
+      <div class="notes-area">
+        <span class="field-label">Notes (diary)</span>
+        <div id="modalNotesLog" class="notes-log"></div>
+        <div class="notes-add-row">
+          <input type="text" id="modalNewNoteText" placeholder="Add a note for today…">
+          <button class="btn btn-ghost" id="modalAddNoteBtn">Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-danger-text" id="deleteEmpBtn">Remove employee</button>
+      <button class="btn btn-primary" id="modalSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- STYLE POPOVER (rendered at body level, position:fixed via JS - fully decoupled from toolbar layout) -->
+<div class="style-popover" id="stylePopover" style="display:none;">
+  <div id="compactStyleSection">
+    <span class="field-label" style="display:block;margin-bottom:8px;">Compact style</span>
+    <div class="style-popover-options">
+      <button data-style="stacked">Stacked</button>
+      <button data-style="minimal">Minimal</button>
+      <button data-style="pills">Pills</button>
+      <button data-style="badges">Badges</button>
+      <button class="active" data-style="accent">Accent</button>
+    </div>
+  </div>
+  <div id="inlineStyleSection" style="display:none;">
+    <span class="field-label" style="display:block;margin-bottom:8px;">Inline style</span>
+    <div class="style-popover-options">
+      <button class="active" data-inline-style="classic">Classic</button>
+      <button data-inline-style="excel">Excel fill</button>
+      <button data-inline-style="minimal">Minimal</button>
+      <button data-inline-style="zebra">Zebra rows</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROTA MODAL (compact view) -->
+<div class="overlay" id="rotaOverlay">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-head">
+      <div>
+        <h2 id="rotaModalTitle"></h2>
+        <div class="emp-role" id="rotaModalSubtitle"></div>
+      </div>
+      <button class="modal-close" id="rotaModalClose">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="status-select-wrap">
+        <span class="field-label">Activity (AM)</span>
+        <select id="rotaModalAm"></select>
+      </div>
+      <div class="status-select-wrap">
+        <span class="field-label">Plus slot (PM)</span>
+        <select id="rotaModalPm"></select>
+      </div>
+      <div class="status-select-wrap">
+        <span class="field-label">Bookings</span>
+        <div class="stepper" style="max-width:130px;">
+          <input type="number" min="0" id="rotaModalAppts" class="appts-input">
+          <div class="stepper-arrows">
+            <button type="button" id="rotaModalUp">▲</button>
+            <button type="button" id="rotaModalDown">▼</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot" style="justify-content:flex-end;">
+      <button class="btn btn-primary" id="rotaModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Fallback storage layer: when this file runs outside Claude.ai (e.g. hosted on
+// GitHub Pages), window.storage doesn't exist. This shim reproduces the same
+// API using localStorage, so the rest of the app needs zero changes either way.
+if(typeof window.storage === 'undefined'){
+  const LS_PREFIX = 'rota-dashboard:';
+  window.storage = {
+    async get(key){
+      const raw = localStorage.getItem(LS_PREFIX + key);
+      if(raw === null) throw new Error('Key not found: ' + key);
+      return { key, value: raw };
+    },
+    async set(key, value){
+      localStorage.setItem(LS_PREFIX + key, value);
+      return { key, value };
+    },
+    async delete(key){
+      localStorage.removeItem(LS_PREFIX + key);
+      return { key, deleted: true };
+    },
+    async list(prefix){
+      const keys = [];
+      for(let i=0;i<localStorage.length;i++){
+        const k = localStorage.key(i);
+        if(k && k.startsWith(LS_PREFIX + (prefix||''))) keys.push(k.slice(LS_PREFIX.length));
+      }
+      return { keys, prefix };
+    }
+  };
+}
+
+const STATUS_DEFS = {
+  available: {label:'Available', color:'var(--ok)', bg:'var(--ok-bg)', proc:false},
+  sick:      {label:'Sick leave', color:'var(--danger)', bg:'var(--danger-bg)', proc:true},
+  long_term_sick: {label:'Long-term sickness', color:'var(--purple)', bg:'var(--purple-bg)', proc:true},
+  leave:     {label:'Annual leave', color:'var(--info)', bg:'var(--info-bg)', proc:true},
+  other:     {label:'Other / absent', color:'var(--gray)', bg:'var(--gray-bg)', proc:true},
+};
+
+const DEFAULT_PROCEDURES = {
+  sick: [
+    "Employee reported absence (note date and time of contact)",
+    "Absence logged in the internal system",
+    "Expected length of absence established",
+    "If absence >7 days — fit note requested",
+    "Caseload / duties handed over for cover",
+    "Return-to-work interview scheduled",
+    "Return-to-work interview completed and documented",
+  ],
+  long_term_sick: [
+    "Occupational Health referral made",
+    "Case review meeting scheduled with employee",
+    "Fit note / medical evidence on file and up to date",
+    "HR informed and formal case opened",
+    "Review date set for next check-in",
+    "Employee kept informed of process, pay implications, and support available",
+  ],
+  leave: [
+    "Leave request approved in the system",
+    "Team cover checked for the period",
+    "Team / clients informed of the absence",
+    "Duties handed over for the leave period",
+  ],
+  other: [
+    "Reason for absence recorded",
+    "Team informed",
+  ],
+};
+
+const DEFAULT_EMPLOYEES = [
+  {id:'e1', name:'John Smith', role:'Case Manager'},
+  {id:'e2', name:'Jane Doe', role:'Case Manager'},
+];
+
+// Activity codes + colours, based on the team's existing Excel rota.
+// Edit freely in the "Activity codes" manager under the Rota tab.
+const DEFAULT_ACTIVITY_COLORS = {
+  'Clinical':   {bg:'#f0d6f5', fg:'#7a1f82'},
+  'TA':         {bg:'#cfe8ef', fg:'#0f5c70'},
+  'AC':         {bg:'#cfe0fb', fg:'#1d3461'},
+  'NWD':        {bg:'#e4e6ea', fg:'#4b5160'},
+  'CPD':        {bg:'#f6e6bf', fg:'#7a5b12'},
+  'Sick Leave': {bg:'#f9d9c9', fg:'#9c3b16'},
+  'Entrant':    {bg:'#f6e0bf', fg:'#7a5512'},
+  'Audit':      {bg:'#cdeef0', fg:'#0f6b6e'},
+  '1-2-1':      {bg:'#d8f0d3', fg:'#2c6b1f'},
+  'Leave':      {bg:'#fbdcc9', fg:'#9c4a16'},
+  'CME':        {bg:'#f3e3c2', fg:'#7a5b12'},
+  'Spotlight':  {bg:'#cdeef0', fg:'#0f6b6e'},
+  'IR/PBR':     {bg:'#d2f5e3', fg:'#136b43'},
+  'OB':         {bg:'#fbdcc9', fg:'#9c4a16'},
+  'WFH':        {bg:'#cdeff5', fg:'#0f6b80'},
+};
+const DEFAULT_ACTIVITY_CODES = Object.keys(DEFAULT_ACTIVITY_COLORS);
+
+function colorFor(code){
+  if(!code) return {bg:'#ffffff', fg:'#1a1d23'};
+  return (state.activityColors && state.activityColors[code]) || {bg:'#eceef1', fg:'#4b5160'};
+}
+
+let state = null;
+let currentWeekStart = getMonday(new Date());
+let activeEmpId = null;
+let statusFilter = 'all';
+let saveTimer = null;
+
+function getMonday(d){
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  date.setDate(diff);
+  date.setHours(0,0,0,0);
+  return date;
+}
+function fmtDate(d){
+  return d.toLocaleDateString('en-GB', {day:'2-digit', month:'2-digit'});
+}
+function weekKey(d){
+  return d.toISOString().slice(0,10);
+}
+
+// Status <-> Rota sync for TODAY only. Only statuses with a clear 1:1 activity
+// code equivalent are synced automatically (sick, leave) — anything ambiguous
+// (training, other, available) is left alone to avoid overwriting real work data.
+const STATUS_ACTIVITY_MAP = { sick: 'Sick Leave', long_term_sick: 'Sick Leave', leave: 'Leave' };
+const ACTIVITY_STATUS_MAP = { 'Sick Leave': 'sick', 'Leave': 'leave' };
+
+function todayDayIndexInWeek(mondayDate){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(mondayDate); start.setHours(0,0,0,0);
+  const diffDays = Math.round((today - start) / 86400000);
+  if(diffDays >= 0 && diffDays < DAY_COUNT) return diffDays;
+  return null; // weekend or different week
+}
+
+function syncStatusToRotaToday(empId, statusKey){
+  const activityCode = STATUS_ACTIVITY_MAP[statusKey];
+  if(!activityCode) return false;
+  const monday = getMonday(new Date());
+  const wk = weekKey(monday);
+  const dayIdx = todayDayIndexInWeek(monday);
+  if(dayIdx === null) return false;
+  if(!state.rota[wk]) state.rota[wk] = {};
+  if(!state.rota[wk][empId]) state.rota[wk][empId] = {};
+  const existing = state.rota[wk][empId][dayIdx];
+  const appts = (existing && typeof existing === 'object') ? existing.appts : '';
+  state.rota[wk][empId][dayIdx] = { am: activityCode, pm: activityCode, appts: appts || '' };
+  return true;
+}
+
+function syncRotaCellToStatusToday(empId, dayIdx, wk){
+  const monday = getMonday(new Date());
+  const currentWk = weekKey(monday);
+  if(wk !== currentWk) return false;
+  const todayIdx = todayDayIndexInWeek(monday);
+  if(todayIdx === null || dayIdx !== todayIdx) return false;
+
+  const cell = (state.rota[wk] && state.rota[wk][empId] && state.rota[wk][empId][dayIdx]) || {};
+  const statusKey = ACTIVITY_STATUS_MAP[cell.am] || ACTIVITY_STATUS_MAP[cell.pm];
+  const existing = state.statuses[empId] || {};
+
+  if(statusKey){
+    // Activity today points at Sick/Leave — reflect that in the status.
+    if(existing.status === statusKey) return false;
+    state.statuses[empId] = {
+      status: statusKey,
+      updatedAt: new Date().toISOString(),
+      checklist: existing.checklist || [],
+      notesLog: existing.notesLog || [],
+    };
+    return true;
+  }
+
+  // Neither slot maps to Sick/Leave today. If the status is currently Sick/Leave
+  // (i.e. it was likely set via this same sync), move it back to Available —
+  // but only ever touch Sick/Leave, never Other or anything set manually for a reason.
+  if(existing.status === 'sick' || existing.status === 'long_term_sick' || existing.status === 'leave'){
+    state.statuses[empId] = {
+      status: 'available',
+      updatedAt: new Date().toISOString(),
+      checklist: [],
+      notesLog: existing.notesLog || [],
+    };
+    return true;
+  }
+  return false;
+}
+
+function initials(name){
+  return name.split(' ').filter(Boolean).map(p=>p[0].toUpperCase()).join('');
+}
+function timeAgo(iso){
+  if(!iso) return 'no data';
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diffMs/60000);
+  if(mins < 1) return 'just now';
+  if(mins < 60) return mins + ' min ago';
+  const hrs = Math.floor(mins/60);
+  if(hrs < 24) return hrs + ' hr ago';
+  const days = Math.floor(hrs/24);
+  return days + ' d ago';
+}
+
+// Native confirm()/prompt()/alert() are blocked in the artifacts sandbox — these are drop-in replacements.
+function showUtilModal({title, message, type, defaultValue}){
+  return new Promise(resolve=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay show';
+    overlay.style.zIndex = '200';
+    const inputHtml = type === 'prompt'
+      ? `<input type="text" id="utilModalInput" value="${(defaultValue||'').replace(/"/g,'&quot;')}" style="margin-top:12px;">`
+      : '';
+    overlay.innerHTML = `
+      <div class="modal" style="max-width:360px;">
+        <div class="modal-head"><h2>${title}</h2></div>
+        <div class="modal-body">
+          <p style="font-size:13.5px;color:var(--ink);margin:0;line-height:1.5;">${message}</p>
+          ${inputHtml}
+        </div>
+        <div class="modal-foot" style="justify-content:flex-end;">
+          ${type !== 'alert' ? '<button class="btn btn-ghost" id="utilModalCancel">Cancel</button>' : ''}
+          <button class="btn btn-primary" id="utilModalOk">OK</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const input = overlay.querySelector('#utilModalInput');
+    if(input){ input.focus(); input.select(); }
+    function cleanup(result){
+      document.body.removeChild(overlay);
+      resolve(result);
+    }
+    overlay.querySelector('#utilModalOk').onclick = ()=>{
+      cleanup(type === 'prompt' ? input.value : true);
+    };
+    const cancelBtn = overlay.querySelector('#utilModalCancel');
+    if(cancelBtn){
+      cancelBtn.onclick = ()=> cleanup(type === 'prompt' ? null : false);
+    }
+    overlay.addEventListener('click', (e)=>{
+      if(e.target === overlay) cleanup(type === 'prompt' ? null : false);
+    });
+    if(input){
+      input.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter') cleanup(input.value);
+        if(e.key === 'Escape') cleanup(null);
+      });
+    }
+  });
+}
+function customConfirm(message, title='Please confirm'){ return showUtilModal({title, message, type:'confirm'}); }
+function customPrompt(message, defaultValue='', title='Enter a value'){ return showUtilModal({title, message, type:'prompt', defaultValue}); }
+function customAlert(message, title='Notice'){ return showUtilModal({title, message, type:'alert'}); }
+
+async function loadData(){
+  try{
+    const res = await window.storage.get('app-data', true);
+    state = JSON.parse(res.value);
+  }catch(e){
+    state = {
+      employees: DEFAULT_EMPLOYEES,
+      statuses: {},
+      procedures: JSON.parse(JSON.stringify(DEFAULT_PROCEDURES)),
+      rota: {},
+    };
+    DEFAULT_EMPLOYEES.forEach(emp=>{
+      state.statuses[emp.id] = {status:'available', updatedAt:new Date().toISOString(), checklist:[], notesLog:[]};
+    });
+    await saveData(true);
+  }
+  if(!state.procedures) state.procedures = JSON.parse(JSON.stringify(DEFAULT_PROCEDURES));
+  if(!state.rota) state.rota = {};
+  if(!state.activityCodes) state.activityCodes = [...DEFAULT_ACTIVITY_CODES];
+  if(!state.activityColors) state.activityColors = JSON.parse(JSON.stringify(DEFAULT_ACTIVITY_COLORS));
+  // migrate old free-text rota cells ("8-16" string) to {am, pm, appts} shape
+  Object.values(state.rota).forEach(week=>{
+    Object.values(week).forEach(empRota=>{
+      Object.keys(empRota).forEach(dayIdx=>{
+        if(typeof empRota[dayIdx] === 'string'){
+          empRota[dayIdx] = {am: empRota[dayIdx], pm:'', appts:''};
+        }
+      });
+    });
+  });
+  // migrate old single-string "notes" field to the notesLog diary format
+  Object.values(state.statuses || {}).forEach(st=>{
+    if(!st.notesLog){
+      st.notesLog = (typeof st.notes === 'string' && st.notes.trim())
+        ? [{date: st.updatedAt || new Date().toISOString(), text: st.notes}]
+        : [];
+    }
+  });
+  try{
+    const pref = await window.storage.get('pref-compact-style', false);
+    if(pref && pref.value){
+      rotaCompactStyle = pref.value;
+      document.querySelectorAll('#stylePopover button[data-style]').forEach(b=>{
+        b.classList.toggle('active', b.dataset.style === rotaCompactStyle);
+      });
+    }
+  }catch(e){}
+  try{
+    const pref2 = await window.storage.get('pref-inline-style', false);
+    if(pref2 && pref2.value){
+      rotaInlineStyle = pref2.value;
+      document.querySelectorAll('#stylePopover button[data-inline-style]').forEach(b=>{
+        b.classList.toggle('active', b.dataset.inlineStyle === rotaInlineStyle);
+      });
+    }
+  }catch(e){}
+  document.getElementById('saveIndicator').textContent = '';
+  renderAll();
+}
+
+async function saveData(silent){
+  if(!silent){
+    document.getElementById('saveIndicator').textContent = 'Saving…';
+  }
+  try{
+    await window.storage.set('app-data', JSON.stringify(state), true);
+    document.getElementById('saveIndicator').textContent = silent ? '' : 'Saved ✓';
+    if(!silent){
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(()=>{ document.getElementById('saveIndicator').textContent=''; }, 1500);
+    }
+  }catch(e){
+    document.getElementById('saveIndicator').textContent = 'Save failed';
+    console.error(e);
+  }
+}
+
+function renderAll(){
+  renderChips();
+  renderEmployees();
+  renderRota();
+  renderProcedures();
+}
+
+// ---------- TAB: STATUS ----------
+function renderChips(){
+  const wrap = document.getElementById('statusChips');
+  wrap.innerHTML = '';
+  const all = document.createElement('button');
+  all.className = 'chip' + (statusFilter==='all'?' active':'');
+  all.textContent = 'Everyone';
+  all.onclick = ()=>{statusFilter='all'; renderAll();};
+  wrap.appendChild(all);
+  Object.entries(STATUS_DEFS).forEach(([key,def])=>{
+    const chip = document.createElement('button');
+    chip.className = 'chip' + (statusFilter===key?' active':'');
+    chip.textContent = def.label;
+    chip.onclick = ()=>{statusFilter=key; renderAll();};
+    wrap.appendChild(chip);
+  });
+}
+
+function renderEmployees(){
+  const grid = document.getElementById('empGrid');
+  grid.innerHTML = '';
+  const anon = document.getElementById('anonToggle').checked;
+  let list = state.employees;
+  if(statusFilter !== 'all'){
+    list = list.filter(e => (state.statuses[e.id]?.status || 'available') === statusFilter);
+  }
+  if(list.length === 0){
+    grid.innerHTML = '<div class="empty">No employees in this view.</div>';
+    return;
+  }
+  list.forEach(emp=>{
+    const st = state.statuses[emp.id] || {status:'available', checklist:[], updatedAt:null};
+    const def = STATUS_DEFS[st.status] || STATUS_DEFS.available;
+    const card = document.createElement('div');
+    card.className = 'card' + ((st.status === 'sick' || st.status === 'long_term_sick') ? ' pulse-sick' : '');
+    card.onclick = ()=>openModal(emp.id);
+
+    let progressHtml = '';
+    if(def.proc && st.checklist && st.checklist.length){
+      const done = st.checklist.filter(c=>c.done).length;
+      const total = st.checklist.length;
+      const complete = done === total;
+      progressHtml = `<span class="progress-pill" style="background:${complete?'var(--ok-bg)':'var(--warn-bg)'};color:${complete?'var(--ok)':'var(--warn)'}">${done}/${total} step${total===1?'':'s'}</span>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div>
+          <div class="emp-name">${anon ? initials(emp.name) : emp.name}</div>
+          <div class="emp-role">${emp.role || ''}</div>
+        </div>
+        <span class="status-badge" style="color:${def.color};background:${def.bg}">${def.label}</span>
+      </div>
+      <div class="card-meta">
+        <span>Updated: ${timeAgo(st.updatedAt)}</span>
+        ${progressHtml}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+document.getElementById('anonToggle').addEventListener('change', renderEmployees);
+
+document.getElementById('addEmpBtn').onclick = async ()=>{
+  const name = await customPrompt('Full name (or initials):', '', 'Add employee');
+  if(!name) return;
+  const role = await customPrompt('Role (optional):', '', 'Add employee') || '';
+  const id = 'e' + Date.now();
+  state.employees.push({id, name, role});
+  state.statuses[id] = {status:'available', updatedAt:new Date().toISOString(), checklist:[], notesLog:[]};
+  await saveData();
+  renderAll();
+};
+
+const SAMPLE_EMPLOYEES = [
+  {name:'Sarah Mitchell', role:'Functional Assessor'},
+  {name:'David Chen', role:'Functional Assessor'},
+  {name:'Priya Patel', role:'Case Manager'},
+  {name:"Michael O'Brien", role:'Clinical Lead'},
+  {name:'Emma Walsh', role:'Functional Assessor'},
+];
+const SAMPLE_ROTA_PATTERNS = [
+  ['Clinical','CME','4'], ['TA','CPD','3'], ['AC','1-2-1','5'], ['NWD','NWD',''], ['Leave','Leave',''],
+  ['Clinical','Spotlight','6'], ['TA','TA','2'], ['AC','Audit','3'], ['CPD','CPD',''], ['Sick Leave','Sick Leave',''],
+  ['IR/PBR','IR/PBR',''], ['Clinical','OB','5'], ['TA','CME','3'], ['Entrant','Entrant',''], ['AC','1-2-1','4'],
+];
+
+document.getElementById('loadSampleBtn').onclick = async ()=>{
+  if(!await customConfirm('Add 5 sample employees and fill this week\'s rota with example data? Existing employees and any data you already entered are kept as-is.', 'Load sample data')) return;
+  SAMPLE_EMPLOYEES.forEach(s=>{
+    if(state.employees.some(e=>e.name===s.name)) return;
+    const id = 'e' + Date.now() + Math.random().toString(36).slice(2,6);
+    state.employees.push({id, name:s.name, role:s.role});
+    state.statuses[id] = {status:'available', updatedAt:new Date().toISOString(), checklist:[], notesLog:[]};
+  });
+  const wk = weekKey(currentWeekStart);
+  if(!state.rota[wk]) state.rota[wk] = {};
+  let pIdx = 0;
+  state.employees.forEach(emp=>{
+    if(!state.rota[wk][emp.id]) state.rota[wk][emp.id] = {};
+    for(let d=0; d<DAY_COUNT; d++){
+      const existing = state.rota[wk][emp.id][d];
+      const hasData = existing && typeof existing === 'object' && (existing.am || existing.pm);
+      if(hasData) continue;
+      const pat = SAMPLE_ROTA_PATTERNS[pIdx % SAMPLE_ROTA_PATTERNS.length];
+      pIdx++;
+      state.rota[wk][emp.id][d] = {am:pat[0], pm:pat[1], appts:pat[2]};
+    }
+  });
+  await saveData();
+  renderAll();
+};
+
+// ---------- MODAL ----------
+function openModal(empId){
+  activeEmpId = empId;
+  const emp = state.employees.find(e=>e.id===empId);
+  const st = state.statuses[empId] || {status:'available', checklist:[], notesLog:[]};
+  document.getElementById('modalName').textContent = emp.name;
+  document.getElementById('modalRole').textContent = emp.role || '';
+  document.getElementById('modalNewNoteText').value = '';
+  renderNotesLog(st.notesLog || []);
+
+  const sel = document.getElementById('modalStatusSelect');
+  sel.innerHTML = '';
+  Object.entries(STATUS_DEFS).forEach(([key,def])=>{
+    const opt = document.createElement('option');
+    opt.value = key; opt.textContent = def.label;
+    if(key === st.status) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  sel.onchange = ()=>{
+    renderModalChecklist(sel.value, []);
+    toggleLongTermBtn(sel.value);
+  };
+
+  renderModalChecklist(st.status, st.checklist || []);
+  toggleLongTermBtn(st.status);
+  document.getElementById('overlay').classList.add('show');
+}
+
+function toggleLongTermBtn(statusKey){
+  document.getElementById('longTermSickBtn').style.display = statusKey === 'sick' ? 'block' : 'none';
+}
+
+document.getElementById('longTermSickBtn').onclick = ()=>{
+  const sel = document.getElementById('modalStatusSelect');
+  sel.value = 'long_term_sick';
+  renderModalChecklist('long_term_sick', []);
+  toggleLongTermBtn('long_term_sick');
+};
+
+function renderNotesLog(log){
+  const wrap = document.getElementById('modalNotesLog');
+  if(!log || log.length === 0){
+    wrap.innerHTML = '<div class="notes-log-empty">No notes yet.</div>';
+    return;
+  }
+  const sorted = [...log].sort((a,b)=> new Date(b.date) - new Date(a.date));
+  wrap.innerHTML = sorted.map(entry=>{
+    const d = new Date(entry.date);
+    const dateStr = d.toLocaleDateString('en-GB', {day:'2-digit', month:'short'}) + ' ' + d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+    return `<div class="notes-log-item" data-orig-index="${log.indexOf(entry)}">
+      <div><div class="notes-log-text">${entry.text.replace(/</g,'&lt;')}</div><div class="notes-log-date">${dateStr}</div></div>
+      <button class="notes-log-del" title="Delete note">✕</button>
+    </div>`;
+  }).join('');
+  wrap.querySelectorAll('.notes-log-item').forEach(item=>{
+    item.querySelector('.notes-log-del').addEventListener('click', async ()=>{
+      const idx = parseInt(item.dataset.origIndex, 10);
+      const st = state.statuses[activeEmpId];
+      st.notesLog.splice(idx, 1);
+      await saveData(true);
+      renderNotesLog(st.notesLog);
+    });
+  });
+}
+
+document.getElementById('modalAddNoteBtn').onclick = async ()=>{
+  const input = document.getElementById('modalNewNoteText');
+  const text = input.value.trim();
+  if(!text) return;
+  if(!state.statuses[activeEmpId]){
+    state.statuses[activeEmpId] = {status:'available', updatedAt:new Date().toISOString(), checklist:[], notesLog:[]};
+  }
+  if(!state.statuses[activeEmpId].notesLog) state.statuses[activeEmpId].notesLog = [];
+  state.statuses[activeEmpId].notesLog.push({date: new Date().toISOString(), text});
+  input.value = '';
+  await saveData(true);
+  renderNotesLog(state.statuses[activeEmpId].notesLog);
+};
+document.getElementById('modalNewNoteText').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') document.getElementById('modalAddNoteBtn').click();
+});
+
+function renderModalChecklist(statusKey, existingChecklist){
+  const def = STATUS_DEFS[statusKey];
+  const wrap = document.getElementById('modalChecklistWrap');
+  if(!def.proc){
+    wrap.innerHTML = '';
+    return;
+  }
+  const steps = (state.procedures[statusKey] || []);
+  // map existing done-state by step text, else fresh
+  const checklist = steps.map(stepText=>{
+    const existing = existingChecklist.find(c=>c.text===stepText);
+    return {text: stepText, done: existing ? existing.done : false};
+  });
+  wrap.dataset.statusKey = statusKey;
+  wrap.innerHTML = `<span class="field-label">Procedure — ${def.label}</span>` +
+    (checklist.length === 0 ? '<div class="rota-hint">No steps defined for this status yet — add them under "Procedures".</div>' : '') +
+    `<div id="checklistItems"></div>
+     <div class="progress-bar-track"><div class="progress-bar-fill" id="progFill" style="width:0%"></div></div>
+     <div class="progress-text" id="progText"></div>`;
+  const itemsWrap = wrap.querySelector('#checklistItems');
+  checklist.forEach((item, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'checklist-item' + (item.done ? ' done' : '');
+    row.innerHTML = `<input type="checkbox" id="ci${idx}" ${item.done?'checked':''}><label for="ci${idx}">${item.text}</label>`;
+    row.querySelector('input').addEventListener('change', (e)=>{
+      checklist[idx].done = e.target.checked;
+      row.classList.toggle('done', e.target.checked);
+      updateProgress(checklist);
+    });
+    itemsWrap.appendChild(row);
+  });
+  wrap._checklist = checklist;
+  updateProgress(checklist);
+}
+
+function updateProgress(checklist){
+  const total = checklist.length;
+  const done = checklist.filter(c=>c.done).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  const fill = document.getElementById('progFill');
+  const text = document.getElementById('progText');
+  if(fill) fill.style.width = pct + '%';
+  if(text) text.textContent = total ? `${done} of ${total} steps completed` : '';
+}
+
+document.getElementById('modalClose').onclick = ()=>{
+  document.getElementById('overlay').classList.remove('show');
+};
+document.getElementById('overlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'overlay') document.getElementById('overlay').classList.remove('show');
+});
+
+document.getElementById('modalSaveBtn').onclick = async ()=>{
+  const statusKey = document.getElementById('modalStatusSelect').value;
+  const wrap = document.getElementById('modalChecklistWrap');
+  const checklist = wrap._checklist || [];
+  const existingNotesLog = (state.statuses[activeEmpId] && state.statuses[activeEmpId].notesLog) || [];
+  state.statuses[activeEmpId] = {
+    status: statusKey,
+    updatedAt: new Date().toISOString(),
+    checklist: checklist,
+    notesLog: existingNotesLog,
+  };
+  const synced = syncStatusToRotaToday(activeEmpId, statusKey);
+  await saveData();
+  document.getElementById('overlay').classList.remove('show');
+  renderEmployees();
+  if(synced) renderRota();
+};
+
+document.getElementById('deleteEmpBtn').onclick = async ()=>{
+  if(!await customConfirm('Remove this employee from the dashboard?', 'Remove employee')) return;
+  state.employees = state.employees.filter(e=>e.id!==activeEmpId);
+  delete state.statuses[activeEmpId];
+  await saveData();
+  document.getElementById('overlay').classList.remove('show');
+  renderAll();
+};
+
+// ---------- TAB: ROTA ----------
+const DAY_LABELS = ['Mon','Tue','Wed','Thu','Fri'];
+const DAY_COUNT = 5;
+let rotaViewMode = 'compact'; // 'inline' | 'compact'
+let rotaCompactStyle = 'accent'; // 'stacked' | 'minimal' | 'pills' | 'badges' | 'accent'
+let rotaInlineStyle = 'classic'; // 'classic' | 'excel' | 'minimal' | 'zebra'
+let rotaModalCtx = null;
+
+function buildOptions(selected){
+  let opts = `<option value="" ${selected?'':'selected'}>—</option>`;
+  state.activityCodes.forEach(code=>{
+    opts += `<option value="${code}" ${selected===code?'selected':''}>${code}</option>`;
+  });
+  return opts;
+}
+
+const ABBREV_MAP = {
+  'Clinical':'CLIN', 'Sick Leave':'SICK', 'Entrant':'ENT', 'Audit':'AUD',
+  'Leave':'LVE', 'Spotlight':'SPOT', 'Training':'TRN',
+};
+function abbrev(code){
+  if(!code) return '—';
+  if(ABBREV_MAP[code]) return ABBREV_MAP[code];
+  if(code.length <= 5) return code.toUpperCase();
+  return code.slice(0,4).toUpperCase();
+}
+
+function ensureCell(wk, empId, day){
+  if(!state.rota[wk][empId]) state.rota[wk][empId] = {};
+  let cell = state.rota[wk][empId][day];
+  if(!cell || typeof cell === 'string'){
+    cell = {am: typeof cell === 'string' ? cell : '', pm:'', appts:''};
+    state.rota[wk][empId][day] = cell;
+  }
+  return cell;
+}
+
+function renderRota(){
+  const wk = weekKey(currentWeekStart);
+  if(!state.rota[wk]) state.rota[wk] = {};
+  const days = [];
+  for(let i=0;i<DAY_COUNT;i++){
+    const d = new Date(currentWeekStart);
+    d.setDate(d.getDate()+i);
+    days.push(d);
+  }
+  document.getElementById('weekLabel').textContent = `${fmtDate(currentWeekStart)} – ${fmtDate(days[DAY_COUNT-1])}`;
+
+  if(rotaViewMode === 'compact'){
+    renderRotaCompact(wk, days);
+  }else{
+    renderRotaInline(wk, days);
+  }
+  renderCodesManager();
+}
+
+function renderRotaInline(wk, days){
+  const table = document.getElementById('rotaTable');
+  table.className = 'rota inline-' + rotaInlineStyle;
+  const todayIdx = todayDayIndexInWeek(currentWeekStart);
+  let thead = '<thead><tr><th rowspan="2" class="emp-col">Employee</th>' +
+    days.map((d,i)=>`<th colspan="3" class="day-head${i===todayIdx?' today-col':''}">${DAY_LABELS[i]}<br>${fmtDate(d)}</th>`).join('') +
+    '</tr><tr>' +
+    days.map((d,i)=>`<th class="sub-head${i===todayIdx?' today-col':''}">Activity</th><th class="sub-head${i===todayIdx?' today-col':''}">Plus slot</th><th class="sub-head${i===todayIdx?' today-col':''}">Bookings</th>`).join('') +
+    '</tr></thead>';
+
+  let tbody = '<tbody>';
+  if(state.employees.length === 0){
+    tbody += `<tr><td colspan="${1+DAY_COUNT*3}" style="text-align:center;color:var(--ink-soft);padding:24px;">No employees — add them under "Team Status".</td></tr>`;
+  }
+
+  state.employees.forEach(emp=>{
+    tbody += `<tr><td class="emp-col">${emp.name}</td>`;
+    for(let i=0;i<DAY_COUNT;i++){
+      const isToday = i === todayIdx;
+      const cell = ensureCell(wk, emp.id, i);
+      const amColor = colorFor(cell.am);
+      const pmColor = colorFor(cell.pm);
+      tbody += `<td class="slot-cell${isToday?' today-col':''}"><select class="slot-select" data-emp="${emp.id}" data-day="${i}" data-slot="am" style="background-color:${amColor.bg};color:${amColor.fg}">${buildOptions(cell.am)}</select></td>`;
+      tbody += `<td class="slot-cell${isToday?' today-col':''}"><select class="slot-select" data-emp="${emp.id}" data-day="${i}" data-slot="pm" style="background-color:${pmColor.bg};color:${pmColor.fg}">${buildOptions(cell.pm)}</select></td>`;
+      tbody += `<td class="appts-cell${isToday?' today-col':''}"><div class="stepper"><input type="number" min="0" class="appts-input" data-emp="${emp.id}" data-day="${i}" value="${cell.appts||''}" placeholder="–"><div class="stepper-arrows"><button type="button" class="step-up" data-emp="${emp.id}" data-day="${i}">▲</button><button type="button" class="step-down" data-emp="${emp.id}" data-day="${i}">▼</button></div></div></td>`;
+    }
+    tbody += '</tr>';
+  });
+  tbody += '</tbody>';
+  table.innerHTML = thead + tbody;
+
+  table.querySelectorAll('select.slot-select').forEach(sel=>{
+    sel.addEventListener('change', async (e)=>{
+      const empId = e.target.dataset.emp, day = e.target.dataset.day, slot = e.target.dataset.slot;
+      state.rota[wk][empId][day][slot] = e.target.value;
+      const c = colorFor(e.target.value);
+      e.target.style.backgroundColor = c.bg;
+      e.target.style.color = c.fg;
+      const synced = syncRotaCellToStatusToday(empId, parseInt(day, 10), wk);
+      await saveData(true);
+      if(synced) renderEmployees();
+    });
+  });
+  function commitAppts(empId, day, value, inputEl){
+    state.rota[wk][empId][day].appts = value;
+    if(inputEl) inputEl.value = value;
+    saveData(true);
+  }
+  table.querySelectorAll('input.appts-input').forEach(inp=>{
+    inp.addEventListener('change', (e)=>{
+      const empId = e.target.dataset.emp, day = e.target.dataset.day;
+      commitAppts(empId, day, e.target.value, null);
+    });
+  });
+  table.querySelectorAll('.step-up, .step-down').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const empId = e.target.dataset.emp, day = e.target.dataset.day;
+      const inputEl = table.querySelector(`input.appts-input[data-emp="${empId}"][data-day="${day}"]`);
+      let val = parseInt(inputEl.value || '0', 10);
+      if(isNaN(val)) val = 0;
+      val += e.target.classList.contains('step-up') ? 1 : -1;
+      if(val < 0) val = 0;
+      commitAppts(empId, day, String(val), inputEl);
+    });
+  });
+}
+
+function renderRotaCompact(wk, days){
+  const table = document.getElementById('rotaTable');
+  table.className = 'rota compact';
+  const todayIdx = todayDayIndexInWeek(currentWeekStart);
+  let thead = '<thead><tr><th class="emp-col">Employee</th>' +
+    days.map((d,i)=>`<th class="day-head${i===todayIdx?' today-col':''}">${DAY_LABELS[i]}<br>${fmtDate(d)}</th>`).join('') +
+    '</tr></thead>';
+
+  let tbody = '<tbody>';
+  if(state.employees.length === 0){
+    tbody += `<tr><td colspan="${1+DAY_COUNT}" style="text-align:center;color:var(--ink-soft);padding:24px;">No employees — add them under "Team Status".</td></tr>`;
+  }
+  state.employees.forEach(emp=>{
+    tbody += `<tr><td class="emp-col">${emp.name}</td>`;
+    for(let i=0;i<DAY_COUNT;i++){
+      const cell = ensureCell(wk, emp.id, i);
+      const amColor = colorFor(cell.am);
+      const pmColor = colorFor(cell.pm);
+      tbody += `<td class="compact-cell${i===todayIdx?' today-col':''}" data-emp="${emp.id}" data-day="${i}">${renderCompactCellInner(cell, amColor, pmColor)}</td>`;
+    }
+    tbody += '</tr>';
+  });
+  tbody += '</tbody>';
+  table.innerHTML = thead + tbody;
+
+  table.querySelectorAll('td.compact-cell').forEach(td=>{
+    td.addEventListener('click', ()=>{
+      openRotaModal(td.dataset.emp, parseInt(td.dataset.day, 10), wk);
+    });
+  });
+}
+
+function renderCompactCellInner(cell, amColor, pmColor){
+  const apptsTag = cell.appts ? `<span class="compact-appts">${cell.appts}</span>` : '';
+  if(rotaCompactStyle === 'minimal'){
+    return `
+      <div class="compact-line"><span class="compact-dot" style="background:${amColor.fg}"></span>${cell.am || '—'}</div>
+      <div class="compact-line"><span class="compact-dot" style="background:${pmColor.fg}"></span>${cell.pm || '—'}${apptsTag}</div>
+    `;
+  }
+  if(rotaCompactStyle === 'pills'){
+    return `
+      <div class="compact-pillrow">
+        <span class="compact-pill" title="${cell.am || ''}" style="background:${amColor.bg};color:${amColor.fg}">${abbrev(cell.am)}</span>
+        <span class="compact-pill" title="${cell.pm || ''}" style="background:${pmColor.bg};color:${pmColor.fg}">${abbrev(cell.pm)}</span>
+      </div>
+      <div class="compact-appts-row">${cell.appts ? cell.appts + ' bookings' : ''}</div>
+    `;
+  }
+  if(rotaCompactStyle === 'badges'){
+    return `
+      <div class="compact-badgerow">
+        <span class="compact-badge" title="${cell.am || ''}" style="background:${amColor.bg};color:${amColor.fg}">${abbrev(cell.am)}</span>
+        <span class="compact-badge" title="${cell.pm || ''}" style="background:${pmColor.bg};color:${pmColor.fg}">${abbrev(cell.pm)}</span>
+        ${cell.appts ? `<span class="compact-badge-appts">${cell.appts}</span>` : ''}
+      </div>
+    `;
+  }
+  if(rotaCompactStyle === 'accent'){
+    return `
+      <div class="compact-accent">
+        <div class="compact-accent-bar" style="background:${amColor.fg}"></div>
+        <div class="compact-accent-body">
+          <div class="compact-accent-line1">
+            <span class="compact-accent-activity">${cell.am || '—'}</span>
+            ${cell.appts ? `<span class="compact-accent-appts">${cell.appts}</span>` : ''}
+          </div>
+          <div class="compact-accent-line2">${cell.pm || '—'}</div>
+        </div>
+      </div>
+    `;
+  }
+  // default: stacked
+  return `
+    <div class="compact-half" style="background:${amColor.bg};color:${amColor.fg}">${cell.am || '—'}</div>
+    <div class="compact-half" style="background:${pmColor.bg};color:${pmColor.fg}">${cell.pm || '—'}${apptsTag}</div>
+  `;
+}
+
+function openRotaModal(empId, day, wk){
+  rotaModalCtx = {empId, day, wk};
+  const emp = state.employees.find(e=>e.id===empId);
+  const cell = ensureCell(wk, empId, day);
+  const d = new Date(currentWeekStart);
+  d.setDate(d.getDate()+day);
+  document.getElementById('rotaModalTitle').textContent = emp.name;
+  document.getElementById('rotaModalSubtitle').textContent = `${DAY_LABELS[day]} ${fmtDate(d)}`;
+  document.getElementById('rotaModalAm').innerHTML = buildOptions(cell.am);
+  document.getElementById('rotaModalPm').innerHTML = buildOptions(cell.pm);
+  document.getElementById('rotaModalAppts').value = cell.appts || '';
+  document.getElementById('rotaOverlay').classList.add('show');
+}
+
+document.getElementById('rotaModalClose').onclick = ()=>{
+  document.getElementById('rotaOverlay').classList.remove('show');
+};
+document.getElementById('rotaOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'rotaOverlay') document.getElementById('rotaOverlay').classList.remove('show');
+});
+document.getElementById('rotaModalUp').onclick = ()=>{
+  const inp = document.getElementById('rotaModalAppts');
+  let v = parseInt(inp.value || '0', 10); if(isNaN(v)) v = 0;
+  inp.value = v+1;
+};
+document.getElementById('rotaModalDown').onclick = ()=>{
+  const inp = document.getElementById('rotaModalAppts');
+  let v = parseInt(inp.value || '0', 10); if(isNaN(v)) v = 0;
+  inp.value = Math.max(0, v-1);
+};
+document.getElementById('rotaModalSave').onclick = async ()=>{
+  const {empId, day, wk} = rotaModalCtx;
+  const amVal = document.getElementById('rotaModalAm').value;
+  const pmVal = document.getElementById('rotaModalPm').value;
+  state.rota[wk][empId][day] = {
+    am: amVal,
+    pm: pmVal,
+    appts: document.getElementById('rotaModalAppts').value,
+  };
+  const synced = syncRotaCellToStatusToday(empId, day, wk);
+  await saveData(true);
+  document.getElementById('rotaOverlay').classList.remove('show');
+  renderRota();
+  if(synced) renderEmployees();
+};
+
+function setRotaViewMode(mode){
+  rotaViewMode = mode;
+  document.getElementById('viewInlineBtn').classList.toggle('active', mode === 'inline');
+  document.getElementById('viewCompactBtn').classList.toggle('active', mode === 'compact');
+  document.getElementById('viewToggleSlider').classList.toggle('right', mode === 'compact');
+  document.getElementById('compactStyleSection').style.display = mode === 'compact' ? 'block' : 'none';
+  document.getElementById('inlineStyleSection').style.display = mode === 'inline' ? 'block' : 'none';
+  document.getElementById('stylePopover').style.display = 'none';
+  renderRota();
+}
+document.getElementById('rotaViewToggle').addEventListener('click', ()=>{
+  setRotaViewMode(rotaViewMode === 'inline' ? 'compact' : 'inline');
+});
+
+document.getElementById('customizeViewBtn').onclick = (e)=>{
+  e.stopPropagation();
+  const pop = document.getElementById('stylePopover');
+  const willOpen = pop.style.display === 'none';
+  if(willOpen){
+    const btnRect = e.currentTarget.getBoundingClientRect();
+    pop.style.display = 'block';
+    const popWidth = pop.offsetWidth;
+    let left = btnRect.right - popWidth;
+    if(left < 8) left = 8;
+    pop.style.top = (btnRect.bottom + 6) + 'px';
+    pop.style.left = left + 'px';
+  }else{
+    pop.style.display = 'none';
+  }
+};
+document.addEventListener('click', (e)=>{
+  const pop = document.getElementById('stylePopover');
+  if(pop.style.display !== 'none' && e.target.id !== 'customizeViewBtn' && !pop.contains(e.target)){
+    pop.style.display = 'none';
+  }
+});
+document.querySelectorAll('#stylePopover button[data-style]').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    rotaCompactStyle = btn.dataset.style;
+    document.querySelectorAll('#stylePopover button[data-style]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderRota();
+    document.getElementById('stylePopover').style.display = 'none';
+    try{ await window.storage.set('pref-compact-style', rotaCompactStyle, false); }catch(e){}
+  });
+});
+document.querySelectorAll('#stylePopover button[data-inline-style]').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    rotaInlineStyle = btn.dataset.inlineStyle;
+    document.querySelectorAll('#stylePopover button[data-inline-style]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderRota();
+    document.getElementById('stylePopover').style.display = 'none';
+    try{ await window.storage.set('pref-inline-style', rotaInlineStyle, false); }catch(e){}
+  });
+});
+
+function renderCodesManager(){
+  const wrap = document.getElementById('codesChips');
+  wrap.innerHTML = '';
+  state.activityCodes.forEach(code=>{
+    const c = colorFor(code);
+    const chip = document.createElement('div');
+    chip.className = 'code-chip';
+    chip.style.background = c.bg;
+    chip.style.color = c.fg;
+    chip.innerHTML = `<span>${code}</span><button title="Remove">✕</button>`;
+    chip.querySelector('button').addEventListener('click', async ()=>{
+      if(!await customConfirm(`Remove the "${code}" code? Existing rota entries using it will keep showing the text but lose colour-coding.`, 'Remove code')) return;
+      state.activityCodes = state.activityCodes.filter(c2=>c2!==code);
+      await saveData();
+      renderRota();
+    });
+    wrap.appendChild(chip);
+  });
+}
+
+document.getElementById('addCodeBtn').onclick = async ()=>{
+  const code = await customPrompt('New activity code (e.g. Clinical, Leave, Training):', '', 'Add code');
+  if(!code) return;
+  if(state.activityCodes.includes(code)){ await customAlert('That code already exists.', 'Add code'); return; }
+  state.activityCodes.push(code);
+  if(!state.activityColors[code]) state.activityColors[code] = {bg:'#eceef1', fg:'#4b5160'};
+  await saveData();
+  renderRota();
+};
+
+document.getElementById('prevWeek').onclick = ()=>{
+  currentWeekStart.setDate(currentWeekStart.getDate()-7);
+  renderRota();
+};
+document.getElementById('nextWeek').onclick = ()=>{
+  currentWeekStart.setDate(currentWeekStart.getDate()+7);
+  renderRota();
+};
+document.getElementById('todayWeek').onclick = ()=>{
+  currentWeekStart = getMonday(new Date());
+  renderRota();
+};
+
+// ---------- TAB: PROCEDURES ----------
+function renderProcedures(){
+  const grid = document.getElementById('procGrid');
+  grid.innerHTML = '';
+  Object.entries(STATUS_DEFS).forEach(([key,def])=>{
+    if(!def.proc) return;
+    const card = document.createElement('div');
+    card.className = 'proc-card';
+    const steps = state.procedures[key] || [];
+    card.innerHTML = `<h3><span class="proc-dot" style="background:${def.color}"></span>${def.label}</h3>
+      <div class="steps-wrap" id="steps-${key}"></div>
+      <button class="add-step-btn" data-key="${key}">+ Add step</button>`;
+    grid.appendChild(card);
+
+    const stepsWrap = card.querySelector(`#steps-${key}`);
+    steps.forEach((stepText, idx)=>{
+      const row = document.createElement('div');
+      row.className = 'proc-step-row';
+      row.innerHTML = `<input type="text" value="${stepText.replace(/"/g,'&quot;')}" data-key="${key}" data-idx="${idx}">
+                        <button data-key="${key}" data-idx="${idx}" title="Remove step">✕</button>`;
+      stepsWrap.appendChild(row);
+    });
+  });
+
+  grid.querySelectorAll('.proc-step-row input').forEach(inp=>{
+    inp.addEventListener('change', async (e)=>{
+      const key = e.target.dataset.key;
+      const idx = parseInt(e.target.dataset.idx);
+      state.procedures[key][idx] = e.target.value;
+      await saveData(true);
+    });
+  });
+  grid.querySelectorAll('.proc-step-row button').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      const key = e.target.dataset.key;
+      const idx = parseInt(e.target.dataset.idx);
+      state.procedures[key].splice(idx,1);
+      await saveData();
+      renderProcedures();
+    });
+  });
+  grid.querySelectorAll('.add-step-btn').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      const key = e.target.dataset.key;
+      const text = await customPrompt('New procedure step text:', '', 'Add step');
+      if(!text) return;
+      if(!state.procedures[key]) state.procedures[key] = [];
+      state.procedures[key].push(text);
+      await saveData();
+      renderProcedures();
+    });
+  });
+}
+
+// ---------- TABS ----------
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+loadData();
+</script>
+</body>
+</html>
